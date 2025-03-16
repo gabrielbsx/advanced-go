@@ -47,4 +47,42 @@ func main() {
 
 	mapped[1] = "one"
 	mapped[2] = "two"
+
+	dataChannel := make(chan int)
+
+	go func() {
+		dataChannel <- 100
+	}()
+
+	n := <-dataChannel
+
+	fmt.Println(n)
+
+	dataChannel2 := make(chan int, 1)
+
+	dataChannel2 <- 200
+
+	n2 := <-dataChannel2
+
+	fmt.Println(n2)
+
+	dataChannel2 <- 300
+
+	n2 = <-dataChannel2
+
+	fmt.Println(n2)
+
+	dataChannelRange := make(chan int)
+
+	go func() {
+		for i := 0; i < 1000; i++ {
+			dataChannelRange <- i
+		}
+
+		close(dataChannelRange)
+	}()
+
+	for it := range dataChannelRange {
+		fmt.Println(it)
+	}
 }
