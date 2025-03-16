@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"sync"
 	"time"
 
 	"golang.org/x/exp/constraints"
@@ -83,11 +84,16 @@ func main() {
 	dataChannelRange := make(chan int)
 
 	go func() {
+		wg := sync.WaitGroup{}
 		for i := 0; i < 1000; i++ {
-			result := DoWork()
-			dataChannelRange <- result
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				result := DoWork()
+				dataChannelRange <- result
+			}()
 		}
-
+		wg.Wait()
 		close(dataChannelRange)
 	}()
 
