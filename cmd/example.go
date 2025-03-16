@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
 
 	"golang.org/x/exp/constraints"
 )
@@ -26,6 +28,12 @@ func MapValues[T constraints.Ordered](values []T, mapFunc func(T) T) []T {
 	}
 
 	return newValues
+}
+
+func DoWork() int {
+	time.Sleep(time.Second)
+
+	return rand.Intn(100)
 }
 
 func main() {
@@ -76,7 +84,8 @@ func main() {
 
 	go func() {
 		for i := 0; i < 1000; i++ {
-			dataChannelRange <- i
+			result := DoWork()
+			dataChannelRange <- result
 		}
 
 		close(dataChannelRange)
@@ -85,4 +94,5 @@ func main() {
 	for it := range dataChannelRange {
 		fmt.Println(it)
 	}
+
 }
